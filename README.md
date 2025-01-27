@@ -1,2 +1,2 @@
 # spring-petclinic
-Spring PetClinic Sample Application
+Spring Petclinic Sample Application
