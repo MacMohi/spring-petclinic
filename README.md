@@ -6,7 +6,7 @@ Build secure pipeline with Jenkins and push the binary to JFrog Artifactory.
 
 These instructions will give you a copy of the project up and running on
 your local machine for development and testing purposes. See deployment
-for notes on deploying the project on a live system.
+for notes on deploying the project JFrog Artifactory.
 
 ### Prerequisites
 
@@ -21,11 +21,12 @@ Before you try it with Jenkins, check it whether it can be done on the CLI.
 The examples below show how it was run on Ubuntu.
 
 Download project and build it (for a faster process, you may skip the tests)
-
-  git clone https://github.com/MacMohi/spring-petclinic.git
-  cd spring-petclinic
-	mvn clean package -DskipTests
-	java -jar ./target/spring-petclinic*.jar
+```sh
+git clone https://github.com/MacMohi/spring-petclinic.git
+cd spring-petclinic
+mvn clean package -DskipTests
+java -jar ./target/spring-petclinic*.jar
+```
 
 ### Build a runnable docker image
 
@@ -40,32 +41,32 @@ ENTRYPOINT ["java", "-jar", "spring-petclinic.jar"]
 
 Build the docker image and you can access it at http://localhost:8080
 ```sh
-  docker build -t myspace/spring-petclinic:your_version .
-  docker run -p 8080:8080 myspace/spring-petclinic:your_version
+docker build -t myspace/spring-petclinic:your_version .
+docker run -p 8080:8080 myspace/spring-petclinic:your_version
 ```
 
-### Build and scan the project with JFrog-CLI
+### Deployment: Build and scan the project with JFrog-CLI
 
 After a successful free registration of JFrog SaaS you need to download [JFrog-CLI Site](https://docs.jfrog-applications.jfrog.io/jfrog-applications/jfrog-cli/install).
 To configure the cli tool, you will need your credentials like username/password or access-token.
 Follow Step 3 and Step 4 from the [JFrog Help Center](https://jfrog.com/help/r/get-started-with-the-jfrog-platform/step-3-add-maven-repositories-and-artifacts) to set-up repositories,
 configure and run maven followed by Step 4 to scan for open-source security vulnerabilities and license compliance.
 
-If the configuration with JFrog was successful, the dependencies will be downloaded from JFrog Artifactory
+If the configuration with JFrog was successful, during maven-build, the dependencies will be downloaded from JFrog Artifactory.
 ```sh
-	Downloaded from central: https://cloud.jfrog.io/artifactory/spring-petclinic-libs-release/com/fasterxml/jackson/....
-	Downloaded from central: https://cloud.jfrog.io/artifactory/spring-petclinic-libs-release/org/graalvm/buildtools/....
-	Downloaded from central: https://cloud.jfrog.io/artifactory/spring-petclinic-libs-release/org/codehaus/plexus/....
-	...
-	...
+Downloaded from central: https://cloud.jfrog.io/artifactory/spring-petclinic-libs-release/com/fasterxml/jackson/....
+Downloaded from central: https://cloud.jfrog.io/artifactory/spring-petclinic-libs-release/org/graalvm/buildtools/....
+Downloaded from central: https://cloud.jfrog.io/artifactory/spring-petclinic-libs-release/org/codehaus/plexus/....
+...
+...
 ```
-Otherwise you will see the dependencies downloaded from Maven repository
+Otherwise you will see the dependencies downloaded from Maven repository!
 ```sh
-	Downloaded from central: https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-dependencies/....
-	Downloading from spring-milestones: https://repo.spring.io/milestone/org/graalvm/buildtools/native-maven-plugin/0.10.3/....
-	Downloading from central: https://repo.maven.apache.org/maven2/org/graalvm/buildtools/native-maven-plugin/0.10.3/....
-	...
-	...
+Downloaded from central: https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-dependencies/....
+Downloading from spring-milestones: https://repo.spring.io/milestone/org/graalvm/buildtools/native-maven-plugin/0.10.3/....
+Downloading from central: https://repo.maven.apache.org/maven2/org/graalvm/buildtools/native-maven-plugin/0.10.3/....
+...
+...
 ```
 
 ## Jenkins Pipeline
