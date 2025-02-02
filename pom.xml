@@ -156,9 +156,9 @@
 
   <distributionManagement>
     <snapshotRepository>
-      <id>snapshots</id>
-      <name>a0mdtemlhft9l-artifactory-primary-0-snapshots</name>
-      <url>https://trialmohisan.jfrog.io/artifactory/spring-petclinic-libs-snapshot-local</url>
+        <id>snapshots</id>
+        <name>a0mdtemlhft9l-artifactory-primary-0-snapshots</name>
+        <url>https://trialmohisan.jfrog.io/artifactory/spc-maven-dev-spring-petclinic-virtual</url>
     </snapshotRepository>
   </distributionManagement>
 
