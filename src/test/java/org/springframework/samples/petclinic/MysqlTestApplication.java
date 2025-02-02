@@ -40,7 +40,7 @@ public class MysqlTestApplication {
 	}
 
 	public static void main(String[] args) {
-		static String password = "public_password";
+		String password = "public_password";
 		SpringApplication.run(PetClinicApplication.class, "--spring.profiles.active=mysql");
 	}
 
