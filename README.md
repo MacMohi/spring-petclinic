@@ -73,3 +73,4 @@ Downloading from central: https://repo.maven.apache.org/maven2/org/graalvm/build
 
 A complete workflow how to configure and run JFrog Plugin is described at [JFrog Help Center](https://jfrog.com/help/r/artifactory-how-to-use-jfrog-cli-in-jenkins-using-jfrog-plugin/how-to-run-jfrog-cli-commands-using-jfrog-plugin-inside-jenkins)
 
+After Jenkins configuration you may use the jenkins-pipelin.txt as a template. You need to adapt the credentials mentioned in the environment section to your credentials.
