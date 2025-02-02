@@ -1,0 +1,98 @@
+pipeline {
+    agent any
+    
+    tools {
+        maven 'Maven_Home'
+        jfrog 'jfrog-cli'
+    }
+    
+    environment {
+        JFROG_SETTINGS = credentials('jfrog-settings')
+        JF_USER = credentials('JFROG_COMMITTER')
+        STAGE = "dev"
+        DOCKER_IMAGE = "spring-petclinic:3.4.1-SNAPSHOT"
+        DOCKER_IMAGE_NAME = "trialmohisan.jfrog.io/spc-docker-maven-${STAGE}-spring-petclinic-virtual/${DOCKER_IMAGE}"
+        JFROG_PATH = "spc-maven-${STAGE}-spring-petclinic-virtual/3.4.1-SNAPSHOT/"
+        JFROG_REPO = "https://trialmohisan.jfrog.io/artifactory"
+        JFROG_XRAY = "https://trialmohisan.jfrog.io/xray"
+    }
+    
+    stages {
+        stage('Checkout spring-petclinic') {
+            steps {
+                cleanWs()
+                git branch: 'main', url: 'https://github.com/MacMohi/spring-petclinic.git'
+                sh 'git checkout -b dev origin/dev'
+            }
+        }
+        
+        stage('Build with Maven') {
+            steps {
+                echo 'Build'
+                sh 'mvn -s $JFROG_SETTINGS clean package -DskipTests'
+            }
+        }
+        
+        stage('Run Tests') {
+            steps {
+                echo 'Tests'
+                //sh 'mvn -s $JFROG_SETTINGS test'
+            }
+        }
+        
+        stage('Package it as Docker Image') {
+            steps {
+                script {
+                    sh 'docker build -t $DOCKER_IMAGE_NAME .'
+                }
+            }
+        }
+        
+        stage('JFrog XRay Scan') {
+            steps {
+                script {
+                    echo 'XRay'
+                    jf 'scan ./target'
+                    jf 'docker scan --watcher=maven_docker_watcher $DOCKER_IMAGE_NAME'
+                }
+            }
+        }
+
+        
+        stage('Push to JFrog') {
+            steps {
+                script {
+                    echo 'Push'
+                    jf "rt u target/spring-petclinic*.jar ${JFROG_PATH}"
+                    jf 'docker push $DOCKER_IMAGE_NAME'
+                }
+            }
+        }
+        
+        stage('Publish build info') {
+            steps {
+                script {
+                    jf 'rt build-publish'
+                }
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo 'Post stages - success'
+            withCredentials([usernamePassword(credentialsId: 'jfrog_api', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                sh 'curl -u "technical_user:Changeit1!" "https://trialmohisan.jfrog.io/xray/api/v1/reports/export/4?file_name=xray_report&format=pdf&projectKey=spc" --output report.zip'
+                sh 'unzip report.zip'
+                archiveArtifacts artifacts: 'xray_report.pdf', followSymlinks: false
+            }
+        }
+        always {
+            //cleanWs()
+            echo 'Post stages - always'
+            
+            echo 'Clear docker build tmp files'
+            sh 'docker builder prune -f --all'
+        }
+    }
+}
